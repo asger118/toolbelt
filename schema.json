@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "toolbelt snippets",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "snippets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["description", "command"],
+        "properties": {
+          "description": { "type": "string", "minLength": 1, "description": "Shown in the list. Must be unique." },
+          "command": { "type": "string", "minLength": 1, "description": "Use <name> or <name=default> for values to fill in when picked." },
+          "help": { "type": "string", "description": "Shown under the command when the tool is highlighted. May contain newlines." },
+          "os": { "enum": ["windows", "linux"], "description": "Only show the tool on this OS. Leave out to show everywhere." }
+        }
+      }
+    }
+  }
+}
