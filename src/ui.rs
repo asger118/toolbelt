@@ -303,7 +303,7 @@ fn picker_lines(
     for (row, &i) in shown[top..end].iter().enumerate() {
         let s = &snippets[i];
         if top + row == sel {
-            lines.push(vec![span(" ❯ ● ", Style::AccentBold), span(&s.description, Style::AccentBold)]);
+            lines.push(vec![span("   ● ", Style::AccentBold), span(&s.description, Style::AccentBold)]);
             lines.extend(detail_lines(s));
         } else {
             lines.push(vec![span("   ○ ", Style::Dim), span(&s.description, Style::Normal)]);
