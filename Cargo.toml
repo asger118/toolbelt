@@ -1,6 +1,6 @@
 [package]
 name = "toolbelt"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "A fast, lightweight snippet picker that pastes commands onto your prompt"
 license = "MIT"

@@ -106,5 +106,5 @@ stays clean: `%LOCALAPPDATA%\toolbelt\usage.json` on Windows, `~/.local/state/to
 Push a `v*` tag. GitHub Actions builds Windows x64, Linux x64 and Linux arm64 and attaches them to a release.
 
 ```sh
-git tag v0.1.0 && git push origin v0.1.0
+git tag v0.2.0 && git push origin v0.2.0
 ```
