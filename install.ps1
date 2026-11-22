@@ -1,7 +1,7 @@
 # Installs (or updates) toolbelt's `tb` on Windows.
-#   irm https://raw.githubusercontent.com/OWNER/toolbelt/main/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/asger118/toolbelt/main/install.ps1 | iex
 $ErrorActionPreference = 'Stop'
-$repo = 'OWNER/toolbelt'
+$repo = 'asger118/toolbelt'
 $dir = Join-Path $env:LOCALAPPDATA 'toolbelt\bin'
 $zip = Join-Path $env:TEMP 'tb-windows-x64.zip'
 

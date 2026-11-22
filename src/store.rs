@@ -6,7 +6,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 pub const SCHEMA_URL: &str =
-    "https://raw.githubusercontent.com/OWNER/toolbelt/main/schema.json";
+    "https://raw.githubusercontent.com/asger118/toolbelt/main/schema.json";
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

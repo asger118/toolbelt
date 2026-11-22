@@ -16,15 +16,15 @@ inserted at your cursor, ready to edit or run. Works in PowerShell (Windows) and
 
 **Windows** (PowerShell):
 ```powershell
-irm https://raw.githubusercontent.com/OWNER/toolbelt/main/install.ps1 | iex
+irm https://raw.githubusercontent.com/asger118/toolbelt/main/install.ps1 | iex
 ```
 
 **Linux** (x64 and arm64):
 ```sh
-curl -fsSL https://raw.githubusercontent.com/OWNER/toolbelt/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/asger118/toolbelt/main/install.sh | sh
 ```
 
-Run the same command again to update. Or build from source: `cargo install --git https://github.com/OWNER/toolbelt`.
+Run the same command again to update. Or build from source: `cargo install --git https://github.com/asger118/toolbelt`.
 
 ## Enable Ctrl+S
 
@@ -57,7 +57,7 @@ typed word against the description and the command, ignoring case.
 
 ```json
 {
-  "$schema": "https://raw.githubusercontent.com/OWNER/toolbelt/main/schema.json",
+  "$schema": "https://raw.githubusercontent.com/asger118/toolbelt/main/schema.json",
   "snippets": [
     {
       "description": "Show folder tree",

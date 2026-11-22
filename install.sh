@@ -1,8 +1,8 @@
 #!/bin/sh
 # Installs (or updates) toolbelt's `tb` on Linux.
-#   curl -fsSL https://raw.githubusercontent.com/OWNER/toolbelt/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/asger118/toolbelt/main/install.sh | sh
 set -eu
-repo="OWNER/toolbelt"
+repo="asger118/toolbelt"
 dir="$HOME/.local/bin"
 
 case "$(uname -m)" in
