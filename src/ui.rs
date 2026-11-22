@@ -46,6 +46,8 @@ pub struct Term {
     restore_col: Option<u16>,
     #[cfg(unix)]
     saved_stdout: libc::c_int,
+    #[cfg(windows)]
+    saved_codepage: u32,
 }
 
 impl Term {
@@ -64,6 +66,15 @@ impl Term {
         let out: Box<dyn Write> = Box::new(std::io::stdout());
         #[cfg(windows)]
         let out: Box<dyn Write> = Box::new(std::fs::OpenOptions::new().write(true).open("CONOUT$")?);
+        // The console decodes our bytes with its code page (often 850 or 437), which
+        // garbles ❯ ● ↑↓. Switch to UTF-8 while the UI is open; Drop switches back.
+        #[cfg(windows)]
+        let saved_codepage = unsafe {
+            use windows_sys::Win32::System::Console::{GetConsoleOutputCP, SetConsoleOutputCP};
+            let cp = GetConsoleOutputCP();
+            SetConsoleOutputCP(65001);
+            cp
+        };
 
         let mut term = Term {
             out,
@@ -71,6 +82,8 @@ impl Term {
             restore_col: None,
             #[cfg(unix)]
             saved_stdout,
+            #[cfg(windows)]
+            saved_codepage,
         };
         terminal::enable_raw_mode()?;
         let col = cursor::position().map(|(c, _)| c).unwrap_or(0);
@@ -150,6 +163,10 @@ impl Drop for Term {
         let _ = queue!(self.out, cursor::Show);
         let _ = self.out.flush();
         let _ = terminal::disable_raw_mode();
+        #[cfg(windows)]
+        if self.saved_codepage != 0 {
+            unsafe { windows_sys::Win32::System::Console::SetConsoleOutputCP(self.saved_codepage) };
+        }
         #[cfg(unix)]
         unsafe {
             libc::dup2(self.saved_stdout, libc::STDOUT_FILENO);
@@ -246,14 +263,14 @@ pub fn pick(term: &mut Term, snippets: &[Snippet], order: &[usize]) -> Result<Op
 }
 
 fn detail_lines(s: &Snippet) -> Vec<Line> {
-    let mut out = vec![vec![span(format!("      {}", s.command), Style::Dim)]];
+    let mut out = vec![vec![span(format!("       {}", s.command), Style::Dim)]];
     if let Some(help) = s.help.as_deref().map(str::trim_end).filter(|h| !h.is_empty()) {
         let lines: Vec<&str> = help.lines().collect();
         for l in lines.iter().take(MAX_HELP_LINES) {
-            out.push(vec![span(format!("      {l}"), Style::Dim)]);
+            out.push(vec![span(format!("       {l}"), Style::Dim)]);
         }
         if lines.len() > MAX_HELP_LINES {
-            out.push(vec![span(format!("      … {} more lines", lines.len() - MAX_HELP_LINES), Style::Dim)]);
+            out.push(vec![span(format!("       … {} more lines", lines.len() - MAX_HELP_LINES), Style::Dim)]);
         }
     }
     out
@@ -286,10 +303,10 @@ fn picker_lines(
     for (row, &i) in shown[top..end].iter().enumerate() {
         let s = &snippets[i];
         if top + row == sel {
-            lines.push(vec![span(" ❯ ", Style::AccentBold), span(&s.description, Style::AccentBold)]);
+            lines.push(vec![span(" ❯ ● ", Style::AccentBold), span(&s.description, Style::AccentBold)]);
             lines.extend(detail_lines(s));
         } else {
-            lines.push(vec![span(format!("   {}", s.description), Style::Normal)]);
+            lines.push(vec![span("   ○ ", Style::Dim), span(&s.description, Style::Normal)]);
         }
     }
 
