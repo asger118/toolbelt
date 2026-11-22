@@ -1,4 +1,5 @@
 mod editor;
+mod goto;
 mod placeholder;
 mod shell;
 mod store;
@@ -33,6 +34,12 @@ enum Cmd {
     Init { shell: String },
     /// Print the path of the snippet file
     Path,
+    /// Find a folder under ~/repos (and C:\repos) by name, typos allowed, and print its path.
+    /// The `goto` shell function from `tb init` cd's into it.
+    Goto {
+        /// Folder name, or several words that all appear in its path. Empty opens a picker.
+        query: Vec<String>,
+    },
 }
 
 /// Exit code when the user presses Esc, like other shell pickers.
@@ -45,6 +52,7 @@ fn main() -> ExitCode {
         Some(Cmd::New) => new(),
         Some(Cmd::Edit) => edit(),
         Some(Cmd::Init { shell }) => init(&shell),
+        Some(Cmd::Goto { query }) => goto(&query.join(" ")),
         Some(Cmd::Path) => store::path().map(|p| {
             println!("{}", p.display());
             ExitCode::SUCCESS
@@ -70,7 +78,7 @@ fn pick() -> Result<ExitCode> {
     let order = usage::order(&visible, &usage::load());
 
     let mut term = Term::open()?;
-    let Some(i) = ui::pick(&mut term, &visible, &order)? else {
+    let Some(i) = ui::pick(&mut term, "Pick a tool", &visible, &order)? else {
         return Ok(ExitCode::from(CANCELLED));
     };
     let snippet = &visible[i];
@@ -186,6 +194,42 @@ fn edit() -> Result<ExitCode> {
             }
         }
     }
+}
+
+fn goto(query: &str) -> Result<ExitCode> {
+    let roots = goto::roots();
+    if roots.is_empty() {
+        bail!("no repo folder found. Create ~/repos or set TOOLBELT_GOTO_ROOTS");
+    }
+    let dirs = goto::scan(&roots);
+    let hits = goto::find(&dirs, query);
+    let dir = match hits.as_slice() {
+        [] => {
+            let list = roots.iter().map(|r| r.display().to_string()).collect::<Vec<_>>().join(", ");
+            bail!("no folder matches `{query}` in {list}");
+        }
+        [i] => &dirs[*i],
+        _ => {
+            // Ambiguous (or no query): let the user pick, reusing the snippet picker.
+            let items: Vec<Snippet> = hits
+                .iter()
+                .map(|&i| Snippet {
+                    description: dirs[i].rel.clone(),
+                    command: dirs[i].path.display().to_string(),
+                    help: None,
+                    os: None,
+                })
+                .collect();
+            let order: Vec<usize> = (0..items.len()).collect();
+            let mut term = Term::open()?;
+            let Some(i) = ui::pick(&mut term, "Go to", &items, &order)? else {
+                return Ok(ExitCode::from(CANCELLED));
+            };
+            &dirs[hits[i]]
+        }
+    };
+    println!("{}", dir.path.display());
+    Ok(ExitCode::SUCCESS)
 }
 
 fn init(shell: &str) -> Result<ExitCode> {

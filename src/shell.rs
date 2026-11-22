@@ -21,6 +21,12 @@ Set-PSReadLineKeyHandler -Chord 'Ctrl+s' -BriefDescription 'toolbelt' -Descripti
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert($out)
     }
 }
+
+# toolbelt: `goto <name>` jumps to a folder under ~/repos, typos allowed
+function goto {
+    $dir = & tb goto @args
+    if ($LASTEXITCODE -eq 0 -and $dir) { Set-Location -LiteralPath $dir }
+}
 "#;
 
 pub const BASH: &str = r#"# toolbelt: Ctrl+S picks a tool and inserts it at the cursor
@@ -32,6 +38,9 @@ __toolbelt_insert() {
 }
 [[ $- == *i* ]] && stty -ixon 2>/dev/null   # free Ctrl+S from terminal flow control
 bind -x '"\C-s": __toolbelt_insert'
+
+# toolbelt: `goto <name>` jumps to a folder under ~/repos, typos allowed
+goto() { local dir; dir=$(command tb goto "$@") && [ -n "$dir" ] && cd -- "$dir"; }
 "#;
 
 pub const ZSH: &str = r#"# toolbelt: Ctrl+S picks a tool and inserts it at the cursor
@@ -43,6 +52,9 @@ __toolbelt_insert() {
 zle -N __toolbelt_insert
 [[ -o interactive ]] && stty -ixon 2>/dev/null   # free Ctrl+S from terminal flow control
 bindkey '^S' __toolbelt_insert
+
+# toolbelt: `goto <name>` jumps to a folder under ~/repos, typos allowed
+goto() { local dir; dir=$(command tb goto "$@") && [ -n "$dir" ] && cd -- "$dir"; }
 "#;
 
 pub fn script(shell: &str) -> Option<&'static str> {

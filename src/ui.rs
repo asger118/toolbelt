@@ -206,7 +206,7 @@ fn footer(text: &str) -> Line {
 // ---------------------------------------------------------------- picker
 
 /// Pick one of `snippets[order[..]]`. Returns the index into `snippets`, or None if cancelled.
-pub fn pick(term: &mut Term, snippets: &[Snippet], order: &[usize]) -> Result<Option<usize>> {
+pub fn pick(term: &mut Term, title: &str, snippets: &[Snippet], order: &[usize]) -> Result<Option<usize>> {
     let mut query = String::new();
     let mut sel = 0usize;
     let mut top = 0usize;
@@ -225,7 +225,7 @@ pub fn pick(term: &mut Term, snippets: &[Snippet], order: &[usize]) -> Result<Op
         }
         top = top.min(shown.len().saturating_sub(room));
 
-        term.draw(&picker_lines(snippets, &shown, sel, top, room, &query))?;
+        term.draw(&picker_lines(title, snippets, &shown, sel, top, room, &query))?;
 
         let k = next_key()?;
         let ctrl = k.modifiers.contains(KeyModifiers::CONTROL);
@@ -277,6 +277,7 @@ fn detail_lines(s: &Snippet) -> Vec<Line> {
 }
 
 fn picker_lines(
+    title: &str,
     snippets: &[Snippet],
     shown: &[usize],
     sel: usize,
@@ -286,10 +287,10 @@ fn picker_lines(
 ) -> Vec<Line> {
     let mut lines = Vec::new();
     if query.is_empty() {
-        lines.push(vec![span(" Pick a tool", Style::Bold), span("  type to filter", Style::Dim)]);
+        lines.push(vec![span(format!(" {title}"), Style::Bold), span("  type to filter", Style::Dim)]);
     } else {
         lines.push(vec![
-            span(" Pick a tool", Style::Bold),
+            span(format!(" {title}"), Style::Bold),
             span("  filter: ", Style::Dim),
             span(query, Style::Accent),
             span(" ", Style::Cursor),
