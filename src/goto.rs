@@ -22,7 +22,8 @@ impl Dir {
     }
 }
 
-/// `TOOLBELT_GOTO_ROOTS` (a PATH-style list) if set, else `~/repos`, plus `C:\repos` on Windows.
+/// `TOOLBELT_GOTO_ROOTS` (a PATH-style list) if set, else `~/repos`, `C:\repos` on Windows,
+/// and your Documents folder.
 pub fn roots() -> Vec<PathBuf> {
     let mut roots: Vec<PathBuf> = match std::env::var_os("TOOLBELT_GOTO_ROOTS") {
         Some(v) => std::env::split_paths(&v).collect(),
@@ -32,6 +33,7 @@ pub fn roots() -> Vec<PathBuf> {
                 let drive = std::env::var("SystemDrive").unwrap_or_else(|_| "C:".into());
                 r.push(PathBuf::from(format!("{drive}\\repos")));
             }
+            r.extend(dirs::document_dir());
             r
         }
     };

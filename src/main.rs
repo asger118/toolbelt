@@ -34,7 +34,7 @@ enum Cmd {
     Init { shell: String },
     /// Print the path of the snippet file
     Path,
-    /// Find a folder under ~/repos (and C:\repos) by name, typos allowed, and print its path.
+    /// Find a folder under ~/repos, C:\repos and ~/Documents by name, typos allowed, and print its path.
     /// The `goto` shell function from `tb init` cd's into it.
     Goto {
         /// Folder name, or several words that all appear in its path. Empty opens a picker.
@@ -199,7 +199,7 @@ fn edit() -> Result<ExitCode> {
 fn goto(query: &str) -> Result<ExitCode> {
     let roots = goto::roots();
     if roots.is_empty() {
-        bail!("no repo folder found. Create ~/repos or set TOOLBELT_GOTO_ROOTS");
+        bail!("no folder to search. Create ~/repos or set TOOLBELT_GOTO_ROOTS");
     }
     let dirs = goto::scan(&roots);
     let hits = goto::find(&dirs, query);

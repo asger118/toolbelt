@@ -47,7 +47,7 @@ Without the binding, `tb` prints the picked command instead.
 | `tb edit` | Open the snippet file in `$VISUAL` / `$EDITOR` / VS Code / notepad / nano, then check it for errors. |
 | `tb init <shell>` | Print the Ctrl+S binding for `powershell`, `bash` or `zsh`. |
 | `tb path` | Print where the snippet file is. |
-| `goto <name>` | Jump to a folder under your repos (see below). Needs the `tb init` line. |
+| `goto <name>` | Jump to a folder under your repos or Documents (see below). Needs the `tb init` line. |
 
 The list shows **recently used tools first**, then the rest in file order. Filtering matches every
 typed word against the description and the command, ignoring case.
@@ -58,7 +58,7 @@ typed word against the description and the command, ignoring case.
 (`goto bachlor-dcos`), and so are parts of names (`goto rapport`) or several words from the path
 (`goto swt eksamen`). If more than one folder fits, the picker opens. `goto` alone lists every folder.
 
-- **Searched:** `~/repos`, plus `C:\repos` on Windows, 3 folders deep. Set `TOOLBELT_GOTO_ROOTS`
+- **Searched:** `~/repos`, `C:\repos` on Windows, and your Documents folder, 3 folders deep. Set `TOOLBELT_GOTO_ROOTS`
   (a PATH-style list) to search other folders.
 - **Skipped:** hidden folders, build output (`node_modules`, `target`, `bin`, `obj`, …), and anything
   inside a git repo, so you don't land in a `src/` folder by accident.

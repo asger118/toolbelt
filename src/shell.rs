@@ -22,7 +22,7 @@ Set-PSReadLineKeyHandler -Chord 'Ctrl+s' -BriefDescription 'toolbelt' -Descripti
     }
 }
 
-# toolbelt: `goto <name>` jumps to a folder under ~/repos, typos allowed
+# toolbelt: `goto <name>` jumps to a folder under ~/repos or ~/Documents, typos allowed
 function goto {
     $dir = & tb goto @args
     if ($LASTEXITCODE -eq 0 -and $dir) { Set-Location -LiteralPath $dir }
@@ -39,7 +39,7 @@ __toolbelt_insert() {
 [[ $- == *i* ]] && stty -ixon 2>/dev/null   # free Ctrl+S from terminal flow control
 bind -x '"\C-s": __toolbelt_insert'
 
-# toolbelt: `goto <name>` jumps to a folder under ~/repos, typos allowed
+# toolbelt: `goto <name>` jumps to a folder under ~/repos or ~/Documents, typos allowed
 goto() { local dir; dir=$(command tb goto "$@") && [ -n "$dir" ] && cd -- "$dir"; }
 "#;
 
@@ -53,7 +53,7 @@ zle -N __toolbelt_insert
 [[ -o interactive ]] && stty -ixon 2>/dev/null   # free Ctrl+S from terminal flow control
 bindkey '^S' __toolbelt_insert
 
-# toolbelt: `goto <name>` jumps to a folder under ~/repos, typos allowed
+# toolbelt: `goto <name>` jumps to a folder under ~/repos or ~/Documents, typos allowed
 goto() { local dir; dir=$(command tb goto "$@") && [ -n "$dir" ] && cd -- "$dir"; }
 "#;
 
